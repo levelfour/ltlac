@@ -1,4 +1,5 @@
 type t =
+  | Bool of bool
   | AP of string
   | Not of t
   | Or of t * t
@@ -10,6 +11,8 @@ type t =
   | Release of t * t
 
 let rec to_s = function
+  | Bool(true) -> "T"
+  | Bool(false) -> "!"
   | AP(p) -> p
   | Not(e') -> Printf.sprintf "(~%s)" (to_s e')
   | Or(e1, e2) -> Printf.sprintf "(%s\\/%s)" (to_s e1) (to_s e2)

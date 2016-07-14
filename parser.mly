@@ -2,6 +2,8 @@
 open Syntax
 %}
 
+%token TOP
+%token BOTTOM
 %token NOT
 %token OR
 %token AND
@@ -28,6 +30,8 @@ open Syntax
 
 fml:
 | LPAREN fml RPAREN { $2 }
+| TOP               { Bool(true) }
+| BOTTOM            { Bool(false) }
 | IDENT             { AP($1) }
 | NOT fml           { Not($2) }
 | fml OR fml        { Or($1, $3) }

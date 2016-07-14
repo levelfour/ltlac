@@ -15,6 +15,8 @@ rule token = parse
 | 'G'   { GLOBALLY }
 | 'U'   { UNTIL }
 | 'R'   { RELEASE }
+| 'T'   { TOP }
+| '!'   { BOTTOM }
 | ['a'-'z']+ as lxm { IDENT(lxm) }
 | '\n'  { EOF }
 | eof   { EOF }
