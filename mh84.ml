@@ -22,6 +22,41 @@ let f a =
     let (_, _, s') = List.hd @@
       List.filter (fun (x, y, _) -> x = s && y = a) r
   in s' in
+
+  let rec build_r (u, v) =
+    List.map (fun a ->
+    let after =
+      if List.length u <> 0 then
+        List.map (fun (x, y) ->
+          let x = LTLSet.of_list x in
+          let y = LTLSet.of_list y in
+          (LTLSet.elements @@ LTLSet.diff x sf,
+           LTLSet.elements @@ LTLSet.union y @@ LTLSet.inter x sf))
+        (List.filter (fun (x, y) ->
+          let x = LTLSet.of_list x in
+          let x' = LTLSet.diff (LTLSet.of_list states) x in
+          let y = LTLSet.of_list y in
+          let y' = LTLSet.diff (LTLSet.of_list states) y in
+          let pbfml1 = Pbfml.inter (List.map (fun t -> rho t a) u) in
+          let pbfml2 = Pbfml.inter (List.map (fun t -> rho t a) v) in
+          (Pbfml.satisfy x x' pbfml1) && (Pbfml.satisfy y y' pbfml2)
+        ) (perm_list ss ss))
+      else
+        List.map (fun y ->
+          let y = LTLSet.of_list y in
+          (LTLSet.elements @@ LTLSet.diff y sf,
+           LTLSet.elements @@ LTLSet.inter y sf))
+        (List.filter (fun y ->
+          let y = LTLSet.of_list y in
+          let y' = LTLSet.diff (LTLSet.of_list states) y in
+          let pbfml = Pbfml.inter (List.map (fun t -> rho t a) v) in
+          Pbfml.satisfy y y' pbfml
+        ) ss)
+    in ((u, v), a, after)) alphabets in
+    let r' = build_r (List.hd s0') in
+
+
+    (*
   let r' = List.map (fun ((u, v), a) ->
     let after =
       if List.length u <> 0 then
@@ -52,4 +87,5 @@ let f a =
         ) ss)
     in ((u, v), a, after)
   ) (perm_list (perm_list ss ss) alphabets) in
+*)
   { initial = s0'; final = sf'; transition = r' }
